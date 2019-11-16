@@ -11,7 +11,7 @@ MAP = {} # TODO: replace with map class object
 def requestMapUpdate(request):
 	print("in requestMapUpdate")
 	time.sleep(10)
-	return json.dumps({"res": "turn right"})
+	return json.dumps({"curr": "Packard Ave", "dir" : "left", "wait_time" : 7})
 
 
 class GetHandler(BaseHTTPRequestHandler):
