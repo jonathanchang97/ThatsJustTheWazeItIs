@@ -8,6 +8,7 @@ NUM_THREADS = 100
 
 MAP = {} # TODO: replace with map class object
 
+# TODO: remove when the map api is set
 def requestMapUpdate(request):
 	print("in requestMapUpdate")
 	time.sleep(10)
@@ -25,9 +26,13 @@ class GetHandler(BaseHTTPRequestHandler):
 				output[kv[0]] = kv[1]
 
 		post_body = self.rfile.read(int(output['Content-Length']))
+		print(post_body)
 		body = json.loads(post_body)
+		self.send_response(200)
+		self.send_header('Content-Type', 'application/json')
+		self.end_headers()
 		self.wfile.write(bytes(requestMapUpdate(body), "utf-8"))
-		return self.send_response(200)
+		return 
 
 def main():
 	with socketserver.TCPServer(("", PORT), GetHandler) as httpd:
