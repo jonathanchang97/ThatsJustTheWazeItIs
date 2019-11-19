@@ -1,0 +1,10 @@
+from, to, street_name, distance
+A,B,Curtis Ave,7
+B,A,Curtis Ave,7
+A,C,Winthrop,2
+B,C,Boston Ave,20
+B,D,Hillsdale,6
+B,E,Bristol,15
+E,B,Bristol,15
+C,E,Talbot,5
+E,D,Professor's Row,9
