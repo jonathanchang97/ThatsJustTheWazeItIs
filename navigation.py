@@ -1,10 +1,11 @@
 # Navigation module for ThatsJustTheWazeItIs
+from collections import defaultdict
 
-def dijkstra(graph, initial):
+def dijkstra(graph, initial, final):
     visited = {initial: 0}
     path = {}
 
-    nodes = set(graph.nodes)
+    nodes = graph.nodes
 
     while nodes:
         min_node = None
@@ -21,11 +22,13 @@ def dijkstra(graph, initial):
         nodes.remove(min_node)
         current_weight = visited[min_node]
 
-        for edge in graph.edges[min_node]:
-            # weight = current_weight + graph.distances[(min_node, edge)]
-            weight = current_weight + getWeight(graph.edges[min_node][edge])
-            if edge not in visited or weight < visited[edge]:
-                visited[edge] = weight
-                path[edge].append(min_node)
+        for to_node in graph.edges[min_node]:
+            weight = current_weight + graph.getWeight(min_node, to_node)
+            if to_node not in visited or weight < visited[to_node]:
+                visited[to_node] = weight
+                if to_node in path:
+                    path[to_node].append(min_node)
+                else:
+                    path[to_node] = [min_node]
 
-      return path
+    return visited[to_node]
