@@ -4,6 +4,7 @@ import time
 import json
 import threading
 import selectors
+from queue import SynchronizedQueue
 
 
 PORT        = 8080
@@ -19,13 +20,11 @@ else:
 # TODO: remove when the map api is set
 def requestMapUpdate(request):
 	print("in requestMapUpdate")
-	time.sleep(10)
+	time.sleep(3)
 	return json.dumps({"curr": "Packard Ave", "dir" : "left", "wait_time" : 7})
-
 
 class GetHandler(BaseHTTPRequestHandler):
 	def do_POST(self):
-		print("got post!!")
 		fields= self.headers.as_string().split('\n')
 		output = {}
 		for field in fields: 
@@ -40,9 +39,18 @@ class GetHandler(BaseHTTPRequestHandler):
 		self.send_header('Content-Type', 'application/json')
 		self.end_headers()
 		self.wfile.write(bytes(requestMapUpdate(body), "utf-8"))
-		return 
+
+def consumer(queue_):
+	while True:
+		httpd = queue_.get()
+		httpd.handle_request()
 
 def main():
+	queue_ = SynchronizedQueue()
+	threads = [threading.Thread(target=consumer, args=[queue_]) for i in range(0, NUM_THREADS)]
+	for thread in threads:
+		thread.start()
+
 	with socketserver.TCPServer(("", PORT), GetHandler) as httpd:
 		with _ServerSelector() as selector:
 			selector.register(httpd, selectors.EVENT_READ)
@@ -50,11 +58,9 @@ def main():
 			while True:
 				ready = selector.select()
 				if ready:
-					th = threading.Thread(target=httpd._handle_request_noblock, args=[])
-					th.start()
+					queue_.put(httpd)
 
 				httpd.service_actions()
-
 
 
 if __name__ == '__main__':
