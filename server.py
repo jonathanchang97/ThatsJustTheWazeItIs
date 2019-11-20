@@ -1,3 +1,13 @@
+#
+# server.py
+# Purpose:
+# 
+# To make this concurrent without using ThreadingMixIn, we turned to the source 
+# code for socketserver: https://github.com/python/cpython/blob/master/Lib/socketserver.py?fbclid=IwAR0ujDLy_1Au6nVBodpbc5uXQxMoJ7kC2v7Idhn79qduA5J499tNV9TzB-I
+# We used this code directly instead calling serve_forever() so we could process
+# the requests concurrently.
+#
+
 from http.server import BaseHTTPRequestHandler
 import socketserver
 import time
@@ -6,11 +16,11 @@ import threading
 import selectors
 from queue import SynchronizedQueue
 
-
 PORT        = 8080
 NUM_THREADS = 100
 
 MAP = {} # TODO: replace with map class object
+
 
 if hasattr(selectors, 'PollSelector'):
     _ServerSelector = selectors.PollSelector
