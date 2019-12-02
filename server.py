@@ -14,7 +14,7 @@ import time
 import json
 import threading
 import selectors
-from queue import SynchronizedQueue
+from myQueue import SynchronizedQueue
 
 PORT        = 8080
 NUM_THREADS = 100

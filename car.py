@@ -2,6 +2,8 @@ import requests
 import sys
 import json
 import time
+import os
+from gtts import gTTS
 
 class Car:
     def __init__ (self, curr, dest, server, port=8080):
@@ -19,9 +21,13 @@ class Car:
             if self.dest == res["curr"]:
                 break
             if res["dir"] == "straight":
-                print(f"Continue straight on {self.curr}")
+                tts = gTTS(text=f"Continue straight on {self.curr}", lang='en')
+                tts.save("speech.mp3")
+                os.system("mpg123 speech.mp3")
             else:
-                print(f"Turn {res['dir']} onto {res['curr']}")
+                tts = gTTS(text=f"Turn on {self.curr}", lang='en')
+                tts.save("speech.mp3")
+                os.system("mpg123 speech.mp3")
             self.curr = res['curr']
             self.wait_time = res['wait_time']
 
