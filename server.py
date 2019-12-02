@@ -21,7 +21,6 @@ NUM_THREADS = 100
 
 MAP = {} # TODO: replace with map class object
 
-
 if hasattr(selectors, 'PollSelector'):
     _ServerSelector = selectors.PollSelector
 else:
@@ -71,7 +70,6 @@ def main():
 					queue_.put(httpd)
 
 				httpd.service_actions()
-
 
 if __name__ == '__main__':
 	main()
