@@ -12,11 +12,15 @@ class Car:
         self.url = server
         self.port = port
         self.wait_time = 0
+
+    def printAndSay(self, string):         
+        tts = gTTS(text=string, lang='en')
+        tts.save("speech.mp3")
+        os.system("ffplay -nodisp -autoexit -volume 100 -loglevel quiet speech.mp3")
+        print(string)
     
     def loop(self):
-        tts = gTTS(text=f"Starting route from {self.curr} to {self.dest}", lang='en')
-        tts.save("speech.mp3")
-        os.system("ffplay -nodisp -autoexit -volume 100 speech.mp3")
+        self.printAndSay(f"Starting route from {self.curr} to {self.dest}")
         while True:
             time.sleep(self.wait_time) 
             res = json.loads(requests.post(self.url, json = {"curr": self.curr, "dest": self.dest}).text)
@@ -24,19 +28,12 @@ class Car:
             if self.dest == res["curr"]:
                 break
             if res["dir"] == "straight":
-                tts = gTTS(text=f"Continue straight on {self.curr} for {self.wait_time} seconds", lang='en')
-                tts.save("speech.mp3")
-                os.system("ffplay -nodisp -autoexit -volume 100 speech.mp3")
+                self.printAndSay(f"Continue straight on {self.curr} for {self.wait_time} seconds")
             else:
-                tts = gTTS(text=f"Turn onto {self.curr}", lang='en')
-                tts.save("speech.mp3")
-                os.system("ffplay -nodisp -autoexit -volume 100 speech.mp3")
+                self.printAndSay(f"Turn onto {self.curr}")
             self.curr = res['curr']
-
-        tts = gTTS(text=f"You have arrived at your destination", lang='en')
-        tts.save("speech.mp3")
-        os.system("ffplay -nodisp -autoexit -volume 100 speech.mp3")
-
+        
+        printAndSay(f"You have arrived at your destination")
 
 def main(argv):
     argc = len(argv)
