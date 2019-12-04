@@ -3,6 +3,20 @@ The goal of our project is to create a concurrent network of cars driving on a m
 
 ## Dependencies
 gtts
+
 requests
+
 numpy
 
+python version must be >= 3.6
+
+
+
+## Running example 
+In one terminal window:
+
+python server.py
+
+In another terminal window(s):
+
+python car.py A D http://localhost:8080
