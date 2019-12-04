@@ -23,7 +23,6 @@ NUM_THREADS = 100
 
 nav_solution = None # TODO: replace with map class object
 
-
 if hasattr(selectors, 'PollSelector'):
     _ServerSelector = selectors.PollSelector
 else:
@@ -57,7 +56,7 @@ def consumer(queue_):
 		httpd.handle_request()
 
 def main():
-    nav_solution = nav.Navigation("example.txt")
+        nav_solution = nav.Navigation("example.txt")
 	queue_ = SynchronizedQueue()
 	threads = [threading.Thread(target=consumer, args=[queue_]) for i in range(0, NUM_THREADS)]
 	for thread in threads:
@@ -73,7 +72,6 @@ def main():
 					queue_.put(httpd)
 
 				httpd.service_actions()
-
 
 if __name__ == '__main__':
 	main()
