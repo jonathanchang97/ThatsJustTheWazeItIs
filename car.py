@@ -27,7 +27,7 @@ class Car:
                 self.printAndSay(f"Current expected remaining time left to {self.dest}: {res['total_wait']}")
                 self.prev = self.curr
                 self.curr = res['next']
-                time.sleep(res['wait_time'])
+                time.sleep(res['wait'])
 
         self.printAndSay("You have arrived at your destination")
         self.wait_time = 0
