@@ -1,8 +1,6 @@
 # transit flow module for ThatsJustTheWazeItIs
 from collections import defaultdict
 import numpy as np
-import pandas as pd
-
 
 class Edge:
     """docstring for Edge."""

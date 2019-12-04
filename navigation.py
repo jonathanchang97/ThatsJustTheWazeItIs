@@ -2,6 +2,7 @@
 from collections import defaultdict
 import json
 import threading
+from map import Graph
 
 class Navigation:
     """docstring for ."""
@@ -11,13 +12,16 @@ class Navigation:
         self.__roomEmpty = threading.Lock()
         self.__turnstile = threading.Lock()
 
-    def requestMapUpdate(body):
+    def requestMapUpdate(self, body):
         self.__turnstile.acquire()
         self.__turnstile.release()
 
         with self.__roomEmpty:
             path, wait, total_wait = self.dijkstra(body["curr"], body["dest"])
-
+        
+        print("PATH")
+        print(path)
+    
         if len(path) == 1:
             road = ""
         else:
@@ -26,12 +30,12 @@ class Navigation:
             self.__turnstile.acquire()
             self.__roomEmpty.acquire()
             self.updateMap(body["prev"], path[0], path[1])
-            self.__turnstile.release():
+            self.__turnstile.release()
             self.__roomEmpty.release()
+        
+        return json.dumps({"next": path, "road": road, "wait" : wait, "total_wait" : total_wait})
 
-        return json.dumps({"next": path[1], "road": road, "wait" : wait, "total_wait" = total_wait})
-
-    def dijkstra(curr, dest):
+    def dijkstra(self, curr, dest):
         visited = {curr: 0}
         path = {curr: [curr]}
 
@@ -61,7 +65,7 @@ class Navigation:
         return path[dest][1], visited[path[dest][1]], visited[dest]
 
 
-    def updateMap(prev, curr, next):
+    def updateMap(self, prev, curr, next):
         if prev:
             self.graph[prev][curr].num_cars -= 1
         self.graph[curr][next].num_cars += 1

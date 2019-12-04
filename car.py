@@ -15,7 +15,7 @@ class Car:
 
 
     def loop(self):
-        printAndSay(f"Beginning journey from {self.curr} to {self.dest}")
+        self.printAndSay(f"Beginning journey from {self.curr} to {self.dest}")
 
         while True:
             res = json.loads(requests.post(self.url, json = {"prev" : self.prev, "curr": self.curr, "dest": self.dest}).text)
@@ -23,17 +23,17 @@ class Car:
             if not res["road"]:
                 break
             else:
-                printAndSay(f"Turn onto {res['road']}")
-                printAndSay(f"Current expected remaining time left to {self.dest}: {res['total_wait']}")
+                self.printAndSay(f"Turn onto {res['road']}")
+                self.printAndSay(f"Current expected remaining time left to {self.dest}: {res['total_wait']}")
                 self.prev = self.curr
                 self.curr = res['next']
                 time.sleep(res['wait_time'])
 
-        printAndSay("You have arrived at your destination")
+        self.printAndSay("You have arrived at your destination")
         self.wait_time = 0
 
 
-    def printAndSayAndSay(self, string):         
+    def printAndSay(self, string):         
         tts = gTTS(text=string, lang='en')
         tts.save("speech.mp3")
         os.system("ffplay -nodisp -autoexit -volume 100 -loglevel quiet speech.mp3")
