@@ -5,25 +5,27 @@ import time
 
 class Car:
     def __init__ (self, curr, dest, server, port=8080):
+        self.prev = ""
         self.curr = curr
         self.dest = dest
         self.url = server
         self.port = port
-        self.wait_time = 0
-    
+
+
     def loop(self):
         print(f"Beginning journey from {self.curr} to {self.dest}")
+
         while True:
-            time.sleep(self.wait_time) 
-            res = json.loads(requests.post(self.url, json = {"curr": self.curr, "dest": self.dest}).text)
-            if self.dest == res["curr"]:
+            res = json.loads(requests.post(self.url, json = {"prev" : self.prev, "curr": self.curr, "dest": self.dest}).text)
+
+            if not res["road"]:
                 break
-            if res["dir"] == "straight":
-                print(f"Continue straight on {self.curr}")
             else:
-                print(f"Turn {res['dir']} onto {res['curr']}")
-            self.curr = res['curr']
-            self.wait_time = res['wait_time']
+                print(f"Turn onto {res['road']}")
+                print(f"Current expected remaining time left to {self.dest}: {res['total_wait']}")
+                self.prev = self.curr
+                self.curr = res['next']
+                time.sleep(res['wait_time'])
 
         print("You have arrived at your destination")
 
@@ -37,7 +39,7 @@ def main(argv):
         server = argv[3]
     car = Car(curr, dest, server)
     car.loop()
-   
+
 
 if __name__ == "__main__":
-    main(sys.argv) 
+    main(sys.argv)

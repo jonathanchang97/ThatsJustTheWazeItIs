@@ -3,11 +3,6 @@ from collections import defaultdict
 import numpy as np
 import pandas as pd
 
-class Car:
-    """Implements car functionality."""
-
-    def __init__(self, arg):
-        self.arg = args
 
 class Edge:
     """docstring for Edge."""
@@ -36,12 +31,6 @@ class Graph:
             self.nodes.add(road[1])
             self.edges[road[0]][road[1]] = Edge(road[2], float(road[3]))
 
-    def add_node(self, value):
-        self.nodes.add(value)
-
-    def add_edge(self, from_node, to_node, distance):
-        self.edges[from_node][to_node] = Edge(distance)
-
     def getWeight(self, from_node, to_node):
         road = self.edges[from_node][to_node]
-        return road.distance + road.num_cars
+        return road.distance * (1 + road.num_cars / (road.num_cars + road.distance))

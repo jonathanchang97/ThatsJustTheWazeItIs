@@ -1,8 +1,8 @@
 #
 # server.py
 # Purpose:
-# 
-# To make this concurrent without using ThreadingMixIn, we turned to the source 
+#
+# To make this concurrent without using ThreadingMixIn, we turned to the source
 # code for socketserver: https://github.com/python/cpython/blob/master/Lib/socketserver.py?fbclid=IwAR0ujDLy_1Au6nVBodpbc5uXQxMoJ7kC2v7Idhn79qduA5J499tNV9TzB-I
 # We used this code directly instead calling serve_forever() so we could process
 # the requests concurrently.
@@ -15,11 +15,13 @@ import json
 import threading
 import selectors
 from queue import SynchronizedQueue
+import navigation as nav
+import map
 
 PORT        = 8080
 NUM_THREADS = 100
 
-MAP = {} # TODO: replace with map class object
+nav_solution = None # TODO: replace with map class object
 
 
 if hasattr(selectors, 'PollSelector'):
@@ -27,17 +29,16 @@ if hasattr(selectors, 'PollSelector'):
 else:
     _ServerSelector = selectors.SelectSelector
 
-# TODO: remove when the map api is set
-def requestMapUpdate(request):
-	print("in requestMapUpdate")
-	time.sleep(3)
-	return json.dumps({"curr": "Packard Ave", "dir" : "left", "wait_time" : 7})
+# def requestMapUpdate(request):
+# 	print("in requestMapUpdate")
+# 	time.sleep(3)
+# 	return json.dumps({"curr": "Packard Ave", "dir" : "left", "wait_time" : 7})
 
 class GetHandler(BaseHTTPRequestHandler):
 	def do_POST(self):
 		fields= self.headers.as_string().split('\n')
 		output = {}
-		for field in fields: 
+		for field in fields:
 			kv = field.split(':')
 			if len(kv) >= 2:
 				output[kv[0]] = kv[1]
@@ -48,7 +49,7 @@ class GetHandler(BaseHTTPRequestHandler):
 		self.send_response(200)
 		self.send_header('Content-Type', 'application/json')
 		self.end_headers()
-		self.wfile.write(bytes(requestMapUpdate(body), "utf-8"))
+		self.wfile.write(bytes(nav_solution.requestNavUpdate(body), "utf-8"))
 
 def consumer(queue_):
 	while True:
@@ -56,6 +57,7 @@ def consumer(queue_):
 		httpd.handle_request()
 
 def main():
+    nav_solution = nav.Navigation("example.txt")
 	queue_ = SynchronizedQueue()
 	threads = [threading.Thread(target=consumer, args=[queue_]) for i in range(0, NUM_THREADS)]
 	for thread in threads:
