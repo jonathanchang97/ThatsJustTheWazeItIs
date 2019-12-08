@@ -8,6 +8,7 @@ from gtts import gTTS
 class Car:
     def __init__ (self, curr, dest, server, port=8080):
         self.prev = ""
+
         self.curr = curr
         self.dest = dest
         self.url = server
@@ -22,12 +23,14 @@ class Car:
 
             if not res["road"]:
                 break
-            else:
+            elif self.curr == res["road"]:
+                self.printAndSay(f"Continue straight on {res['road']}") 
+            else:    
                 self.printAndSay(f"Turn onto {res['road']}")
-                self.printAndSay(f"Current expected remaining time left to {self.dest}: {res['total_wait']}")
-                self.prev = self.curr
-                self.curr = res['next']
-                time.sleep(res['wait'])
+            self.printAndSay(f"Current expected remaining time left to {self.dest}: {res['total_wait']}")
+            self.prev = self.curr
+            self.curr = res['next']
+            time.sleep(res['wait'])
 
         self.printAndSay("You have arrived at your destination")
         self.wait_time = 0
