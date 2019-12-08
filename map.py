@@ -3,8 +3,6 @@ from collections import defaultdict
 import numpy as np
 
 class Edge:
-    """docstring for Edge."""
-
     def __init__(self, road_name, distance):
         self.road_name = road_name
         self.distance = distance
