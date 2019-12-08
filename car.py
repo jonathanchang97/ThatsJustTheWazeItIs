@@ -31,8 +31,8 @@ class Car:
                 self.printAndSay(f"Continue straight on {res['road']}") 
             else:    
                 self.printAndSay(f"Turn onto {res['road']}")
-            self.printAndSay(f"Current expected remaining time left to \
-                             {self.dest}: {res['total_wait']}")
+            self.printAndSay(f"Current expected remaining time left to\
+ {self.dest}: {res['total_wait']} seconds")
             self.prev = self.curr
             self.curr = res['next']
             time.sleep(res['wait'])
@@ -46,7 +46,7 @@ class Car:
         tts = gTTS(text=string, lang='en')
         tts.save("speech.mp3")
         os.system("ffplay -nodisp -autoexit -volume 100 -loglevel quiet \
-                  speech.mp3")
+                   speech.mp3")
         print(string)
     
 
