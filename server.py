@@ -29,7 +29,7 @@ else:
     _ServerSelector = selectors.SelectSelector
 
 
-class GetHandler(BaseHTTPRequestHandler):
+class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         fields= self.headers.as_string().split('\n')
         output = {}
@@ -57,7 +57,7 @@ def main():
 
         for thread in threads:
             thread.start()
-        with socketserver.TCPServer(("", PORT), GetHandler) as httpd:
+        with socketserver.TCPServer(("", PORT), Handler) as httpd:
             with _ServerSelector() as selector:
                 selector.register(httpd, selectors.EVENT_READ)
                 while True:
