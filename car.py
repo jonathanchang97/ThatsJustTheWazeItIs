@@ -16,6 +16,7 @@ class Car:
 
 
     def loop(self):
+        """ Main loop for car, breaks once destination node has been reached """
         self.printAndSay(f"Beginning journey from {self.curr} to {self.dest}")
 
         while True:
@@ -36,7 +37,8 @@ class Car:
         self.wait_time = 0
 
 
-    def printAndSay(self, string):         
+    def printAndSay(self, string):        
+        """ Function to print a string and read it using gTTS """ 
         tts = gTTS(text=string, lang='en')
         tts.save("speech.mp3")
         os.system("ffplay -nodisp -autoexit -volume 100 -loglevel quiet speech.mp3")
@@ -44,6 +46,7 @@ class Car:
     
 
 def main(argv):
+    """ Initialize car based on command line arguments """
     argc = len(argv)
     curr, dest, server = "", "", ""
     if argc == 4:
