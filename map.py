@@ -29,4 +29,6 @@ class Graph:
 
     def getWeight(self, from_node, to_node):
         road = self.edges[from_node][to_node]
-        return road.distance * (1 + road.num_cars / (road.num_cars + road.distance))
+        distance = road.distance
+        cars = road.num_cars
+        return distance * (1 + cars / (cars + distance))

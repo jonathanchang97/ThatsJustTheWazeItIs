@@ -53,7 +53,8 @@ def consumer(queue_):
 
 def main():
         queue_ = SynchronizedQueue()
-        threads = [threading.Thread(target=consumer, args=[queue_]) for i in range(0, NUM_THREADS)]
+        threads = [threading.Thread(target=consumer, 
+                                    args=[queue_]) for _ in range(NUM_THREADS)]
 
         for thread in threads:
             thread.start()

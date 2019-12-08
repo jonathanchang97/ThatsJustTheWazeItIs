@@ -7,7 +7,6 @@ import copy
 
 
 class Navigation:
-    """docstring for ."""
 
     def __init__(self, filename):
         self.graph = Graph(filename)
@@ -39,7 +38,8 @@ class Navigation:
             return json.dumps({"road": ""})
         else:
             road = self.graph.edges[path[0]][path[1]].road_name
-            return json.dumps({"next": path[1], "road": road, "wait" : wait, "total_wait" : total_wait})
+            return json.dumps({"next":path[1], "road":road, "wait":wait,
+                               "total_wait":total_wait})
 
     def dijkstra(self, curr, dest):
         visited = {curr: 0}
@@ -63,7 +63,8 @@ class Navigation:
             current_weight = visited[min_node]
 
             for to_node in self.graph.edges[min_node]:
-                weight = current_weight + self.graph.getWeight(min_node, to_node)
+                weight = current_weight + \
+                         self.graph.getWeight(min_node, to_node)
                 if to_node not in visited or weight < visited[to_node]:
                     visited[to_node] = weight
                     path[to_node] = path[min_node] + [to_node]
