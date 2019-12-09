@@ -15,24 +15,44 @@ from map import Graph
 import copy
 
 
+class Lightswitch:
+    def __init__(self):
+        self.__counter = 0
+        self.__mutex = threading.Lock()
+
+    def lock(self, semaphore):
+        self.__mutex.acquire()
+        self.__counter += 1
+        if self.__counter == 1:
+            semaphore.acquire()
+        self.__mutex.release()
+
+    def unlock(self, semaphore):
+        self.__mutex.acquire()
+        self.__counter -= 1
+        if self.__counter == 0:
+            semaphore.release()
+        self.__mutex.release()
+
+
 class Navigation:
+    """ module define car navigation requests related to the map.  This includes
+        reads and writes to the map"""
 
     def __init__(self, filename):
         self.graph = Graph(filename)
         self.__roomEmpty = threading.Lock()
         self.__turnstile = threading.Lock()
+        self.__readSwitch = Lightswitch()
 
+    # processes a car's request whenever it reaches an intersection
     def requestMapUpdate(self, body):
         self.__turnstile.acquire()
         self.__turnstile.release()
 
-        with self.__roomEmpty:
-            print(f"body[curr]: {body['curr']}")
-            print(f"body[dest]: {body['dest']}")
-            path, wait, total_wait = self.dijkstra(body["curr"], body["dest"])
-
-        print("PATH")
-        print(path)
+        self.__readSwitch.lock(self.__roomEmpty)
+        path, wait, total_wait = self.dijkstra(body["curr"], body["dest"])
+        self.__readSwitch.unlock(self.__roomEmpty)
 
         if not path:
             return json.dumps({"status" : -1})
@@ -53,6 +73,7 @@ class Navigation:
             return json.dumps({"status" : 0, "next" : path[1], "road" : road,
                                "wait" : wait, "total_wait" : total_wait})
 
+    # calculates the SSSP from. the current node to the destination
     def dijkstra(self, curr, dest):
         if curr == dest:
             return [curr], 0, 0
@@ -61,7 +82,7 @@ class Navigation:
         path = {curr: [curr]}
 
         nodes = copy.deepcopy(self.graph.nodes)
-        print(nodes)
+
         while nodes:
             min_node = None
             for node in nodes:
@@ -83,14 +104,13 @@ class Navigation:
                 if to_node not in visited or weight < visited[to_node]:
                     visited[to_node] = weight
                     path[to_node] = path[min_node] + [to_node]
-        print(visited)
 
         if dest in path:
             return path[dest], visited[path[dest][1]], visited[dest]
         else:
             return [], 0, 0
 
-
+    # update the map when a car moves onto a new road
     def updateMap(self, prev, curr, next):
         if prev:
             self.graph.edges[prev][curr].num_cars -= 1
