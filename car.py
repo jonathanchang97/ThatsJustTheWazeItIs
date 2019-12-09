@@ -4,6 +4,8 @@ import json
 import time
 import os
 from gtts import gTTS
+import numpy as np
+
 
 class Car:
     def __init__ (self, curr, dest, server, port=8080):
@@ -13,7 +15,9 @@ class Car:
         self.dest = dest
         self.url = server
         self.port = port
-
+        # Give each Car process a random ID to avoid overwriting
+        # speech.mp3 files
+        self.carID = np.random.randint(10000)
 
     def loop(self):
         """ Main loop for car, breaks once destination node has been reached """
@@ -44,10 +48,10 @@ class Car:
     def printAndSay(self, string):        
         """ Function to print a string and read it using gTTS """ 
         tts = gTTS(text=string, lang='en')
-        tts.save("speech.mp3")
-        os.system("ffplay -nodisp -autoexit -volume 100 -loglevel quiet \
-                   speech.mp3")
+        tts.save(f"speech.{self.carID}.mp3")
         print(string)
+        os.system(f"ffplay -nodisp -autoexit -volume 100 -loglevel quiet \
+                   speech.{self.carID}.mp3")
     
 
 def main(argv):
