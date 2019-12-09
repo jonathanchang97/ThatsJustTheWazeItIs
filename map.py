@@ -1,4 +1,14 @@
-# transit flow module for ThatsJustTheWazeItIs
+#
+#   map.py
+# 
+#       Implements the graph and edge classes, the first of which parses a
+#       supplied text file and represents it as a directed graph, with a
+#       method to compute the weight of an edge as a function of its capacity
+#       and length. The edge class holds each edge’s name, weight, and current
+#       capacity.
+#
+
+
 from collections import defaultdict
 import numpy as np
 

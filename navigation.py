@@ -1,4 +1,13 @@
-# Navigation module for ThatsJustTheWazeItIs
+#
+#   navigation.py
+# 
+#       Contains an implementation of Dijkstra’s algorithm using our
+#       weight system that accounts for the length of the road and the
+#       number of cars on the road, as well as a function to update a
+#       member graph object whenever a car reaches an intersection and
+#       return the updated shortest path.
+#
+
 from collections import defaultdict
 import json
 import threading
@@ -25,6 +34,9 @@ class Navigation:
         print("PATH")
         print(path)
 
+        if not path:
+            return json.dumps({"status" : -1})
+
         self.__turnstile.acquire()
         self.__roomEmpty.acquire()
         if len(path) == 1:
@@ -35,13 +47,16 @@ class Navigation:
         self.__roomEmpty.release()
 
         if len(path) == 1:
-            return json.dumps({"road": ""})
+            return json.dumps({"status" : 1})
         else:
             road = self.graph.edges[path[0]][path[1]].road_name
-            return json.dumps({"next":path[1], "road":road, "wait":wait,
-                               "total_wait":total_wait})
+            return json.dumps({"status" : 0, "next" : path[1], "road" : road,
+                               "wait" : wait, "total_wait" : total_wait})
 
     def dijkstra(self, curr, dest):
+        if curr == dest:
+            return [curr], 0, 0
+
         visited = {curr: 0}
         path = {curr: [curr]}
 
@@ -70,11 +85,10 @@ class Navigation:
                     path[to_node] = path[min_node] + [to_node]
         print(visited)
 
-        time_left = 0
-        if curr != dest:
-            time_left = visited[path[dest][1]]
-
-        return path[dest], time_left, visited[dest]
+        if dest in path:
+            return path[dest], visited[path[dest][1]], visited[dest]
+        else:
+            return [], 0, 0
 
 
     def updateMap(self, prev, curr, next):

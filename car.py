@@ -29,20 +29,20 @@ class Car:
                                      "curr": self.curr,
                                      "dest": self.dest}).text)
 
-            if not res["road"]:
+            if res["status"] == -1:
+                self.printAndSay("You cannot reach your destination from \
+                                 the given starting point")
                 break
-            elif self.curr == res["road"]:
-                self.printAndSay(f"Continue straight on {res['road']}") 
-            else:    
+            elif res["status"] == 1:
+                self.printAndSay("You have arrived at your destination")
+                break
+            else:
                 self.printAndSay(f"Turn onto {res['road']}")
-            self.printAndSay(f"Current expected remaining time left to\
- {self.dest}: {res['total_wait']} seconds")
-            self.prev = self.curr
-            self.curr = res['next']
-            time.sleep(res['wait'])
-
-        self.printAndSay("You have arrived at your destination")
-        self.wait_time = 0
+                self.printAndSay(f"Current expected remaining time left to \
+                                 {self.dest}: {res['total_wait']} seconds")
+                self.prev = self.curr
+                self.curr = res['next']
+                time.sleep(res['wait'])
 
 
     def printAndSay(self, string):        
